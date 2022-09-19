@@ -1,0 +1,34 @@
+# This docker-compose file is for development/test.
+version: "3.7"
+
+services:
+  test:
+    build:
+      context: ../
+      dockerfile: ./tests/.testcontainer/Dockerfile
+      args:
+        - NAME_IMAGE=php:7.1-cli-alpine
+    environment:
+      - COVERALLS_REPO_TOKEN
+    volumes:
+      - ../.devcontainer:/app/.devcontainer
+      - ../.git/:/app/.git
+      - ../src:/app/src
+      - ../tests:/app/tests
+      - ../report:/app/report
+      - ../bin:/app/bin
+
+  dev:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    environment:
+      - COVERALLS_REPO_TOKEN
+    volumes:
+      - ../:/app
+      - ./welcome.sh:/.welcome.sh
+
+  initialize:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.test.initialize

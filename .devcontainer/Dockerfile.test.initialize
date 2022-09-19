@@ -1,0 +1,26 @@
+# =============================================================================
+#  Docker container to test "initialize_package.php" functionability.
+# =============================================================================
+#  This file will be removed in the actual initialization process.
+
+ARG COMPOSER='composer.json'
+
+FROM php:alpine
+
+USER root
+
+RUN apk --no-cache add \
+      git \
+      bash
+
+# Do not mount but copy. The test will re-write and remove files!!!
+COPY . /app
+
+WORKDIR /app
+
+ENV COMPOSER="$COMPOSER"
+
+RUN echo 'memory_limit = -1' >> "$(php -i | grep 'php.ini' | awk '{print $6}')/php.ini" && \
+    /app/.devcontainer/install_composer.sh
+
+ENTRYPOINT [ "/bin/sh", "/app/.devcontainer/entrypoint.test.initialize.sh" ]
